@@ -1,7 +1,5 @@
-
-//This program compute the space S_{k/2}(N,chi,phi) given a newform phi, level N, quadratic character chi, and k -- 
-// the function is shimuraLiftSpaces(chi,k : prec:=8000)
-
+// given a newform phi, level N, quadratic character chi,
+// compute the space S_{k/2}(N,chi,phi)
 
 
 
@@ -11,8 +9,9 @@
 
 
 
-//thetaforms is a function which gives the theta functions 
-// which generate a space which under Shimura map doesn't go to cusp form of integral weight 
+//thetaforms is a function which gives the theta functions of weight 3/2
+// which generate a space which under Shimura map doesn't go to cusp form of integral weight
+// also called one-variable theta series 
 // chi is a quadratic character
 
 thetaforms := function(chi);
@@ -39,6 +38,18 @@ thetaforms := function(chi);
   		return A;
 end function;
                      
+//------------------------------------------------------
+
+//This function gives dimension of Space of cusp forms of weight 3/2 that is orthogonal
+//to the space of one-variable theta series, chi is quadratic character modulo N=4M
+
+dimS0 := function (chi)
+	d:=Dimension(CuspidalSubspace(HalfIntegralWeightForms(chi,3/2)));
+	dtheta:=#thetaforms(chi);
+	return d-dtheta;
+
+end function;
+
 //------------------------------------------------------
 
 //This function gives first prime which is coprime to a given N                                 
@@ -158,8 +169,13 @@ shimuraLiftSpaces:=function(chi, k : prec:=8000);
 //S:=BaseExtend(S,RationalField());				
         print "dimension is", #S;
 	d:=#S;
-	d0:=#thetaforms(chi);
-        print "dimension of thetaforms is", d0;
+//in previous version k was assumed to be 3 while calculating d0 which is not correct
+        if k eq 3 then 
+	   d0:=#thetaforms(chi);
+        else
+           d0:=0;
+        end if;
+       print "dimension of thetaforms is", d0;
 	Vs:=[  VectorSpace( Parent(Coefficient(phi,1)) , d)      :  phi in A   ];
 	Zs:=[ VectorSpace( Parent(Coefficient(phi,1)) , 1)      :  phi in A   ];
 	Us:=Vs;
@@ -206,18 +222,13 @@ shimuraLiftSpaces:=function(chi, k : prec:=8000);
         return $$(chi,k : prec:=prec0);
 end function;
 
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+G:=DirichletGroup(1728);
+chi:=Elements(G)[6];
+chi;
+Conductor(chi);
+shimuraLiftSpaces(chi);
+*/
 
 
 
